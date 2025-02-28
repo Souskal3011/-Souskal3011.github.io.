@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Entertainment Site - Souskal 3011</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #111;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        canvas {
+            background: green;
+            display: block;
+            margin: 20px auto;
+            border: 2px solid white;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+        }
+        input {
+            padding: 10px;
+            width: 80%;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welkom bij de Ultimate Entertainment Site</h1>
+    <p>Alles wat je zoekt, op één plek! Games, video's, films en meer.</p>
+    
+    <input type="text" id="searchBar" placeholder="Zoek iets..." onkeypress="handleSearch(event)">
+    <br>
+    <button onclick="startGame()">Start Spel</button>
+    <button onclick="openRP()">RP-Modus</button>
+    <button onclick="openMultiplayer()">Multiplayer</button>
+    <button onclick="searchVideos()">Zoek Video's</button>
+    
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    
+    <script>
+        let canvas = document.getElementById("gameCanvas");
+        let ctx = canvas.getContext("2d");
+        
+        let player = { x: 400, y: 300, size: 20, speed: 5, inCar: false };
+        let houses = [{x: 100, y: 100, width: 50, height: 50}, {x: 600, y: 400, width: 50, height: 50}];
+        let car = { x: 200, y: 300, width: 40, height: 20, speed: 7, occupied: false };
+        let keys = {};
+
+        window.addEventListener("keydown", function (e) {
+            keys[e.key] = true;
+            if (e.key === "Enter" && isNearCar()) {
+                player.inCar = !player.inCar;
+                car.occupied = player.inCar;
+            }
+        });
+
+        window.addEventListener("keyup", function (e) {
+            keys[e.key] = false;
+        });
+
+        function isNearCar() {
+            return Math.abs(player.x - car.x) < 30 && Math.abs(player.y - car.y) < 30;
+        }
+
+        function drawPlayer() {
+            if (!player.inCar) {
+                ctx.fillStyle = "red";
+                ctx.fillRect(player.x, player.y, player.size, player.size);
+            }
+        }
+
+        function drawHouses() {
+            ctx.fillStyle = "brown";
+            houses.forEach(house => {
+                ctx.fillRect(house.x, house.y, house.width, house.height);
+            });
+        }
+
+        function drawCar() {
+            ctx.fillStyle = car.occupied ? "darkblue" : "blue";
+            ctx.fillRect(car.x, car.y, car.width, car.height);
+        }
+
+        function updateGame() {
+            if (player.inCar) {
+                if (keys["ArrowUp"]) car.y -= car.speed;
+                if (keys["ArrowDown"]) car.y += car.speed;
+                if (keys["ArrowLeft"]) car.x -= car.speed;
+                if (keys["ArrowRight"]) car.x += car.speed;
+                player.x = car.x;
+                player.y = car.y;
+            } else {
+                if (keys["ArrowUp"]) player.y -= player.speed;
+                if (keys["ArrowDown"]) player.y += player.speed;
+                if (keys["ArrowLeft"]) player.x -= player.speed;
+                if (keys["ArrowRight"]) player.x += player.speed;
+            }
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawHouses();
+            drawCar();
+            drawPlayer();
+        }
+
+        function startGame() {
+            setInterval(updateGame, 50);
+        }
+
+        function openRP() {
+            alert("RP-modus wordt nog ontwikkeld!");
+        }
+
+        function openMultiplayer() {
+            alert("Multiplayer komt binnenkort!");
+        }
+
+        function handleSearch(event) {
+            if (event.key === "Enter") {
+                searchVideos();
+            }
+        }
+
+        function searchVideos() {
+            let query = document.getElementById("searchBar").value;
+            if (query.trim() !== "") {
+                window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`, "_blank");
+            }
+        }
+    </script>
+</body>
+</html>
